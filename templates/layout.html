@@ -1,0 +1,13 @@
+<!doctype html>
+<html>
+<head>
+<title>{{ title }}</title>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/reset.css') }}">
+<body>
+{% block content %}
+<!-- ここにメインコンテンツを書く -->
+{% endblock %}
+<script src="{{ url_for('static', filename='js/scripts.js')}}"></script>
+</body>
+</head>
+</html>

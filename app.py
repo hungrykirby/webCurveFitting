@@ -1,5 +1,6 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
 import numpy as np
+import json
 
 app = Flask(__name__)
 
@@ -7,5 +8,10 @@ app = Flask(__name__)
 def index():
     return render_template('canvas.html', title='flask test')
 
+@app.route('/mousePoints', methods=['POST'])
+def mouse_point():
+    points = json.loads(request.data)
+    return jsonify(result_set=points)
+
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000)
+    app.run(host='0.0.0.0')

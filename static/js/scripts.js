@@ -27,8 +27,7 @@ function draw_canvas(){
   let mouseX = "";
   let mouseY = "";
   //初期値（サイズ、色、アルファ値）の決定
-  var defosize = 7;
-  var defocolor = "#555555";
+  var defosize = 2;
   var defoalpha = 1.0;
 
   const w_canvas = canvas.width;
@@ -77,7 +76,7 @@ function draw_canvas(){
     };
 
     //渡されたマウス位置を元に直線を描く関数
-    function draw(X, Y) {
+    function draw(X, Y, color) {
         ctx.beginPath();
         ctx.globalAlpha = defoalpha;
         //マウス継続値によって場合分け、直線の moveTo（スタート地点）を決定
@@ -93,7 +92,7 @@ function draw_canvas(){
         //直線の角を「丸」、サイズと色を決める
         ctx.lineCap = "round";
         ctx.lineWidth = defosize * 2;
-        ctx.strokeStyle = defocolor;
+        ctx.strokeStyle = color;
         ctx.stroke();
         //マウス継続値に現在のマウス位置、つまりゴール位置を代入
         mouseX = X;
@@ -112,7 +111,7 @@ function draw_canvas(){
     }
 
     //x座標とy座標の配列を受け取り、その線を描画する
-    function drawRawLine(X, Y){
+    function drawRawLine(X, Y, color){
       console.log(X.length);
       for(var i = 0; i < X.length; i++){
         ctx.beginPath();
@@ -121,7 +120,7 @@ function draw_canvas(){
         ctx.lineTo(X[i], Y[i]);
         ctx.lineCap = "round";
         ctx.lineWidth = defosize * 2;
-        ctx.strokeStyle = defocolor;
+        ctx.strokeStyle = color;
         ctx.stroke();
         //console.log(X[i], Y[i]);
       }
@@ -139,14 +138,22 @@ function draw_canvas(){
       //_mouse_arr.push(w_canvas - x_rect*2, h_canvas - y_rect*2);
       //_mouse_arr.unshift(x_rect, y_rect)
       console.log('End', _mouse_arr);
-      axios.post('/mousePoints', _mouse_arr)
+      axios.post('/mousePoints', {'points': mouse_arr, 
+        'params':{
+          'x_rect': x_rect,
+          'y_rect': y_rect,
+          'w_canvas':w_canvas,
+          'h_canvas':h_canvas  
+        }})
         .then(response => {
-          const x_and_y = response.data.result_set
+          const x_and_y_raw = response.data.raw_data;
+          const x_and_y_resut = response.data.result;
           ctx.clearRect(0, 0, w_canvas, h_canvas);
           ctx.lineWidth = 2;
           ctx.beginPath();
           ctx.strokeRect(x_rect, y_rect, w_canvas - x_rect*2, h_canvas - y_rect*2);
-          drawRawLine(x_and_y['x'], x_and_y['y']);
+          drawRawLine(x_and_y_raw['x'], x_and_y_raw['y'], '#ff0000');
+          drawRawLine(x_and_y_resut['x'], x_and_y_resut['y'], '#000000');
           mouse_arr = {'x':[], 'y':[]}
         })
         .catch(error => {

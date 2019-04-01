@@ -20,8 +20,28 @@ def mouse_point():
 
     y = np.poly1d(res)(x)
 
+    A = np.array(
+        [
+            [-780/(20 ** 2 - 780 ** 2), -780/(20 ** 2 - 780 ** 2)],
+            [-20/(- 20 ** 2 + 780 ** 2),-20/(- 20 ** 2 + 780 ** 2)]
+        ]
+    )
+
     #print(res)
     res_list = res.tolist()
+    after_parse = {'x':[], 'y':[]}
+    for i in range(len(x.tolist())):
+        arr_xy = np.reshape(np.array([x.tolist()[i], y.tolist()[i]]), (1, 2))
+        print(arr_xy)
+        print()
+        print(np.multiply(arr_xy, A))
+        print()
+        after_parse['x'].append(np.multiply(arr_xy, A)[0])
+        after_parse['y'].append(np.multiply(arr_xy, A)[1])
+    
+    #after_parse = np.array([after_parse])
+    #after_parse = np.multiply(np.array([points['x'], points['y']]), A).tolist()
+    #print(after_parse['x'], after_parse['y'])
 
     fuc = ''
     for i in range(len(res_list)):

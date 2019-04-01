@@ -1,7 +1,6 @@
 window.onload = function() {
-  const c = 0;
   draw_rect();
-  draw_canvas(c);
+  draw_canvas();
 }
 
 function draw_rect() {
@@ -17,12 +16,8 @@ function draw_rect() {
   ctx.strokeRect(x_rect, y_rect, w_canvas - x_rect*2, h_canvas - y_rect*2);
 }
 
-function draw_canvas(c){
-  if(c === 0){
-    c++;
-  }else{
-    return false;
-  }
+function draw_canvas(){
+  let c = 0;
   var canvas = document.getElementById('grapharea');
   var ctx = canvas.getContext('2d');
   //ctx.beginPath();
@@ -51,23 +46,12 @@ function draw_canvas(c){
 
   canvas.addEventListener('mousemove', onMove, false);
   canvas.addEventListener('mousedown', onClick, false);
-  canvas.addEventListener('mouseup', drawEnd, false);
   canvas.addEventListener('mouseout', function(){
-    _mouse_arr = drawEnd();
-    console.log('End', _mouse_arr);
-    axios.post('/mousePoints', _mouse_arr)
-      .then(response => {
-        const x_and_y = response.data.result_set
-        ctx.clearRect(0, 0, w_canvas, h_canvas);
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.strokeRect(x_rect, y_rect, w_canvas - x_rect*2, h_canvas - y_rect*2);
-        drawRawLine(x_and_y['x'], x_and_y['y'])
-      })
-      .catch(error => {
-        console.log(error);
-      })
+    if(c === 0){
+      postPoints();
+    }
   }, false);
+  canvas.addEventListener('mouseup', postPoints, false);
 
 
   //マウス動いていて、かつ左クリック時に発火。
@@ -130,7 +114,7 @@ function draw_canvas(c){
     //x座標とy座標の配列を受け取り、その線を描画する
     function drawRawLine(X, Y){
       console.log(X.length);
-      for(var i = 0; i < X.length - 1; i++){
+      for(var i = 0; i < X.length; i++){
         ctx.beginPath();
         if(typeof X[i] === "undefined") break;
         ctx.moveTo(X[i], Y[i]);
@@ -142,5 +126,32 @@ function draw_canvas(c){
         //console.log(X[i], Y[i]);
       }
     }
+
+    function postPoints(){
+      c++;
+      let _mouse_arr = mouse_arr;
+      mouseX = "";
+      mouseY = "";
+      _mouse_arr['x'].push(w_canvas - x_rect);
+      _mouse_arr['y'].push(y_rect);
+      _mouse_arr['x'].unshift(x_rect);
+      _mouse_arr['y'].unshift(-y_rect + h_canvas);
+      //_mouse_arr.push(w_canvas - x_rect*2, h_canvas - y_rect*2);
+      //_mouse_arr.unshift(x_rect, y_rect)
+      console.log('End', _mouse_arr);
+      axios.post('/mousePoints', _mouse_arr)
+        .then(response => {
+          const x_and_y = response.data.result_set
+          ctx.clearRect(0, 0, w_canvas, h_canvas);
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.strokeRect(x_rect, y_rect, w_canvas - x_rect*2, h_canvas - y_rect*2);
+          drawRawLine(x_and_y['x'], x_and_y['y']);
+          mouse_arr = {'x':[], 'y':[]}
+        })
+        .catch(error => {
+          console.log(error);
+        })
+    };
 
 }

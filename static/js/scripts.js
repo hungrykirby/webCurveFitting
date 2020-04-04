@@ -17,7 +17,7 @@ function draw_rect() {
 }
 
 function draw_canvas(){
-  let c = 0;
+  let c = -1;
   var canvas = document.getElementById('grapharea');
   var ctx = canvas.getContext('2d');
   //ctx.beginPath();
@@ -49,6 +49,7 @@ function draw_canvas(){
     if(c === 0){
       postPoints();
     }
+    // c = 0;
   }, false);
   canvas.addEventListener('mouseup', postPoints, false);
 
@@ -66,6 +67,7 @@ function draw_canvas(){
 
     //マウスが左クリックされると発火。
     function onClick(e) {
+      c = 0;
       if (e.button === 0) {
         var rect = e.target.getBoundingClientRect();
         var X = ~~(e.clientX - rect.left);
@@ -137,7 +139,7 @@ function draw_canvas(){
       _mouse_arr['y'].unshift(-y_rect + h_canvas);
       //_mouse_arr.push(w_canvas - x_rect*2, h_canvas - y_rect*2);
       //_mouse_arr.unshift(x_rect, y_rect)
-      console.log('End', _mouse_arr);
+      // console.log('End', _mouse_arr);
       axios.post('/mousePoints', {'points': mouse_arr, 
         'params':{
           'x_rect': x_rect,
@@ -155,6 +157,7 @@ function draw_canvas(){
           drawRawLine(x_and_y_raw['x'], x_and_y_raw['y'], '#ff0000');
           drawRawLine(x_and_y_resut['x'], x_and_y_resut['y'], '#000000');
           mouse_arr = {'x':[], 'y':[]}
+          // c = 0;
         })
         .catch(error => {
           console.log(error);

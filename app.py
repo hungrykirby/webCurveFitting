@@ -14,40 +14,34 @@ def mouse_point():
     points = data['points']
     params = data['params']
 
-    res=np.polyfit(points['x'], points['y'], 2)
+    kansu = 20
 
-    x= np.linspace(points['x'][0],points['x'][len(points['x']) - 1],100)
+    res = np.polyfit(points['x'], points['y'], kansu)
 
+    x = np.linspace(points['x'][0],points['x'][len(points['x']) - 1],100)
     y = np.poly1d(res)(x)
 
-    A = np.array(
-        [
-            [-780/(20 ** 2 - 780 ** 2), -780/(20 ** 2 - 780 ** 2)],
-            [-20/(- 20 ** 2 + 780 ** 2),-20/(- 20 ** 2 + 780 ** 2)]
-        ]
-    )
-
-    #print(res)
     res_list = res.tolist()
     after_parse = {'x':[], 'y':[]}
     for i in range(len(x.tolist())):
-        arr_xy = np.reshape(np.array([x.tolist()[i], y.tolist()[i]]), (1, 2))
-        print(arr_xy)
-        print()
-        print(np.multiply(arr_xy, A))
-        print()
-        after_parse['x'].append(np.multiply(arr_xy, A)[0])
-        after_parse['y'].append(np.multiply(arr_xy, A)[1])
+        _x = -(x.tolist()[i] - 20)/760.0 + 1.0
+        _y = (y.tolist()[i] - 20)/760.0
+        after_parse['x'].append(_x)
+        after_parse['y'].append(_y)
     
-    #after_parse = np.array([after_parse])
-    #after_parse = np.multiply(np.array([points['x'], points['y']]), A).tolist()
-    #print(after_parse['x'], after_parse['y'])
+    res_after = np.polyfit(after_parse['x'], after_parse['y'], kansu)
+    # print(after_parse)
+    # print(res)
+    # print(res_after)
+    res_after_list = res_after.tolist()
 
     fuc = ''
-    for i in range(len(res_list)):
-        fuc = fuc + '+' + str(res_list[i]) + '*(A4^' + str(len(res_list) - i - 1) + ')'
+    for i in range(len(res_after_list)):
+        fuc = fuc + '+' + str(res_after_list[i]) + '*(A4^' + str(len(res_after_list) - i - 1) + ')'
 
+    print()
     print(fuc)
+    print()
     
     return jsonify(raw_data=points, result={'x':x.tolist(), 'y':y.tolist()})
 

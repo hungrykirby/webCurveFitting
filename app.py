@@ -34,6 +34,7 @@ def mouse_point():
     # print(res)
     # print(res_after)
     res_after_list = res_after.tolist()
+    print(res_after.tolist())
 
     fuc = ''
     for i in range(len(res_after_list)):
